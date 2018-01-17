@@ -16,7 +16,7 @@ def index (request):
     time.sleep(1)
     file_object.close()
     driver.quit()
-    return  HttpResponse ( "Hello world" ) 
+    return  render(request,'/Users/qfgao/Documents/workspace/myiqiyi/server/UI/UI.html')
 def ajax_test_add(request):
 #     envinfo = request.GET.get('envinfo')
     print(123)

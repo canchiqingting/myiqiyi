@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>微价</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/resource/css/bootstrap.min.css">
+  <script src="http://stc.qiyipic.com/js/lib/sea1.2.jenkins-feLibRelease-100.js"></script>
+  <style>
+		.btn_center{
+			margin-top:100px;
+			margin-bottom:100px;
+		}
+  </style> 
+  <script src="http://pv.sohu.com/cityjson?ie=utf-8"></script> 
+  <script type="text/javascript" src="http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js" charset="gb2312"></script>
+  <script type="text/javascript">  
+	window.onload = function(){  
+        var psel = document.getElementById("ip_address_info");  
+        psel.value = returnCitySN["cip"]+','+remote_ip_info['province']+ remote_ip_info['city'];
+    }
+  </script>
+<body style="margin:50px">
+<input type="text" id="ip_address_info" style="display:none">
+<input id="alipay" class="btn btn-info btn-block btn_center" value="支付宝支付">
+<input id="wechatpay" class="btn btn-info btn-block btn_center" value="微信支付">
+
+<form style="display:none" id='formpay' name='formpay' method='post' action='https://pay.paysapi.com'>
+        <input name='goodsname' id='goodsname' type='text' value='' />
+        <input name='istype' id='istype' type='text' value='' />
+        <input name='key' id='key' type='text' value=''/>
+        <input name='notify_url' id='notify_url' type='text' value=''/>
+        <input name='orderid' id='orderid' type='text' value=''/>
+        <input name='orderuid' id='orderuid' type='text' value=''/>
+        <input name='price' id='price' type='text' value=''/>
+        <input name='return_url' id='return_url' type='text' value=''/>
+        <input name='uid' id='uid' type='text' value=''/>
+        <input type='submit' id='submitdemo1'>
+</form>
+
+<script src="/resource/js/jquery.min.js"></script>
+<script type="text/javascript">
+	function getCookie(name)
+	{
+		var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+		if(arr=document.cookie.match(reg))
+		return unescape(arr[2]);
+		else
+		return null;
+	}
+	function csrfSafeMethod(method) {
+	    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	$.ajaxSetup({
+	    beforeSend: function(xhr, settings) {
+	        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+	            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+	        }
+	    }
+	});
+	$().ready(function(){
+	    $("#alipay").click(function(){
+	    	var json_obj = {
+	                ip_address_info : $("#ip_address_info").val(),
+	                orderuid : getCookie('csrftoken'),
+	           }
+	    	var json_str = JSON.stringify(json_obj);  
+	        $.post(
+	            "/server/alipay/",
+	            json_str,
+	            function(data){ 
+	                if (data.code > 0){
+	                   	$("#goodsname").val(data.goodsname);
+	                    $("#istype").val(data.istype);
+	                    $('#key').val(data.key);
+	                    $('#notify_url').val(data.notify_url);
+	                    $('#orderid').val(data.orderid);
+	                    $('#orderuid').val(data.orderuid);
+	                    $('#price').val(data.price);
+	                    $('#return_url').val(data.return_url);
+	                    $('#uid').val(data.uid);
+	                    $('#submitdemo1').click();
+	
+	                } else {
+	                    alert(data.msg);
+	                }
+	            },"json");
+    	});
+	  	$("#wechatpay").click(function(){
+	    	var json_obj = {
+	                ip_address_info : $("#ip_address_info").val(),
+	                orderuid : getCookie('csrftoken')
+            }
+	    	var json_str = JSON.stringify(json_obj);  
+	        $.post(
+	            "/server/wechatpay/",
+	            json_str,
+	            function(data){ 
+	                if (data.code > 0){
+	                	$("#goodsname").val(data.goodsname);
+	                    $("#istype").val(data.istype);
+	                    $('#key').val(data.key);
+	                    $('#notify_url').val(data.notify_url);
+	                    $('#orderid').val(data.orderid);
+	                    $('#orderuid').val(data.orderuid);
+	                    $('#price').val(data.price);
+	                    $('#return_url').val(data.return_url);
+	                    $('#uid').val(data.uid);
+	                    $('#submitdemo1').click();
+	                } else {
+	                    alert(data.msg);
+	                }
+	            }, "json");
+	    });
+	}); 
+</script>    
+<script src="/resource/js/bootstrap.min.js"></script>
+</body>
+</html>
